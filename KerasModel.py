@@ -2,6 +2,8 @@ from keras.models import Sequential, load_model
 from keras.layers import Dense, Activation, Embedding, LSTM, Masking
 from collections import OrderedDict
 import math
+from random import shuffle
+import numpy as np
 
 class KerasModel():
     model = None
@@ -20,9 +22,11 @@ class KerasModel():
         self.transformer = transformer
         inputVec = transformer.getInputMatrix()
         targetVec = transformer.getTargetMatrix()
-        self.getTestSets(inputVec, targetVec, self.transformer.tokenizedArr, 0.1)
+        self.getTestSets(inputVec, targetVec, self.transformer.tokenizedArr, 0.3)
 
-    def getTestSets(self, xInput, xOutput, origArr, percentage):
+    def getTestSets(self, xInput, xOutput, origArr, percentage, shuffle = True):
+        if shuffle:
+             xInput, xOutput = self.shuffleData(xInput, xOutput)
         fromT = 0
         last = xOutput.shape[0]
         toT = int(math.floor(last * (1 - percentage)))
@@ -35,21 +39,32 @@ class KerasModel():
         self.inputVReal = origArr[toT + 1:last]
         return self.inputT, self.outputT, self.inputV, self.outputV, self.inputTReal, self.inputVReal
 
+    def shuffleData(self, xInput, xOutput):
+        xInputShuf = []
+        xOutputShuf = []
+        index_shuf = range(len(xInput))
+        shuffle(index_shuf)
+        for i in index_shuf:
+            xInputShuf.append(xInput[i])
+            xOutputShuf.append(xOutput[i])
+        return np.asarray(xInputShuf), np.asarray(xOutputShuf)
+
     def defineModelStructure(self, maxFeatures, maxTargets, transformer):
         self.model = Sequential()
         inputMatrix = transformer.getInputMatrix()
         shape = inputMatrix.shape
         #self.model.add(Masking(mask_value=0., input_shape=(shape[1], 1)))
-        self.model.add(Embedding(maxFeatures + 1, output_dim=64, mask_zero=True)) #, mask_zero=True
-       # self.model.add(LSTM(600, return_sequences=True))
-        self.model.add(LSTM(200))
+        self.model.add(Embedding(maxFeatures + 1, output_dim=128)) #, mask_zero=True
+        self.model.add(LSTM(1000, return_sequences=True))
+        self.model.add(LSTM(1000))
         self.model.add(Dense(maxTargets, activation='softmax'))
         self.model.compile(optimizer='adam',
                            loss='categorical_crossentropy',
                            metrics=['categorical_accuracy'])
 
     def fitModel(self, transformer, saveModel = False):
-        self.model.fit(self.inputT, self.outputT, nb_epoch=2, batch_size=100, validation_split=0.1, class_weight = transformer.getClassWeights())
+        #self.model.fit(self.inputT, self.outputT, nb_epoch=1, batch_size=100, validation_split=0.3, class_weight = transformer.getClassWeights())
+        self.model.fit(self.inputT, self.outputT, nb_epoch=1, batch_size=100, validation_split=0.3, class_weight = 'auto')
 
     def predictModel(self, inputVec):
         return self.model.predict(inputVec, batch_size=1, verbose=2)
@@ -72,18 +87,54 @@ class KerasModel():
             classifiedList.append(subList)
             i += 1
 
-        test = self.getLabelByLabelVec(outputVec[i-1], self.transformer.wordDictLabels)
+        #test = self.getLabelByLabelVec(outputVec[i-1], self.transformer.wordDictLabels)
         #missclassifications summary
         summaryList = []
+        categoryScores = {}
+
+        matches = 0
+
         for p in subList:
             inputVecReal, classEstimate, outputVecLabel = p
+            if not categoryScores.has_key(outputVecLabel):
+                categoryScores[outputVecLabel] = {}
+                categoryScores[outputVecLabel]['trueClassified'] = 0
+                categoryScores[outputVecLabel]['falseClassified'] = 0
+                categoryScores[outputVecLabel]['labelOccurence'] = 0
+                categoryScores[outputVecLabel]['estimateOccurence'] = 0
+
+            if not categoryScores.has_key(classEstimate[1]):
+                categoryScores[classEstimate[1]] = {}
+                categoryScores[classEstimate[1]]['trueClassified'] = 0
+                categoryScores[classEstimate[1]]['falseClassified'] = 0
+                categoryScores[classEstimate[1]]['labelOccurence'] = 0
+                categoryScores[classEstimate[1]]['estimateOccurence'] = 0
+
+                #categoryScores[outputVecLabel]['estimateOccurence'] = 0
+
+            if not categoryScores.has_key('all'):
+                categoryScores['all'] = {}
+                categoryScores['all']['trueClassified'] = 0
+                categoryScores['all']['falseClassified'] = 0
+
             if classEstimate[1] == outputVecLabel:
                 match = 1
+                categoryScores[outputVecLabel]['trueClassified'] += 1
+                categoryScores['all']['trueClassified'] += 1
+                matches += 1
             else:
+                categoryScores[outputVecLabel]['falseClassified'] += 1
+                categoryScores['all']['falseClassified'] += 1
                 match = 0
-            p.append(match)
 
+            categoryScores[outputVecLabel]['labelOccurence'] += 1
+            categoryScores[classEstimate[1]]['estimateOccurence'] += 1
+
+            p.append(match)
             summaryList.append(p)
+
+        categoryScores['all']['labelOccurence'] = len(subList)
+        accuracy = float(matches)/len(subList)
         pass
 
     def getLabelByLabelVec(self, vec, wordDict):

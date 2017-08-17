@@ -19,6 +19,8 @@ import math
 import re
 from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
+from sklearn.utils import class_weight
+
 
 '''
 spark = SparkSession\
@@ -31,7 +33,7 @@ class LoadTransform():
     df = {}
     #hdfsFolder = "hdfs:///tmp/spiegelei/"
     textType = "text"
-    textWordLimit = 300
+
     initialLoadCSV = True
     initialLoadTokens = False
     tokenizedArr = []
@@ -44,7 +46,7 @@ class LoadTransform():
     wordDictLabels = {}
     wordDictCountLabels = {}
     labelClassWeights = {}
-    minOccurrence = 20
+
     minOccurrenceLabels = 1
 
     tokenizedArrLabels = []
@@ -52,9 +54,11 @@ class LoadTransform():
     paddedBinaryLabelArr = []
     nextNumber = 0
 
-    maxClasses = 10
-    topxDict = 0.7
-    batchSize = 2000
+    minOccurrence = 20
+    textWordLimit = 150
+    maxClasses = 5
+    topxDict = 0.9
+    batchSize = 55555
 
     cachePath = "cache/npArr"+str(batchSize)+".h5"
 
@@ -198,7 +202,14 @@ class LoadTransform():
         self.dictSize = len(self.wordDict)
         self.wordDictCount = OrderedDict(sorted(self.wordDictCount.items(), key=lambda t: t[1], reverse=True))
         self.wordDict, self.wordDictCount = self.cutDict(0, self.wordDict, self.wordDictCount, topX = self.topxDict)
+        self.reorganizeWordDict()
         pass
+
+    def reorganizeWordDict(self):
+        i = 1
+        for word in self.wordDict:
+            self.wordDict[word] = i
+            i += 1
 
     def getSkipWords(self):
         stopList = stopwords.words('german')
@@ -207,11 +218,13 @@ class LoadTransform():
     def createLabelDict(self):
         lines = self.tokenizedArrLabels.shape[0]
         self.nextNumber = 0
+        self.wordDictLabels["$UNC$"] = self.findFreeNumber(self.wordDictLabels)
+
         for line in range(0, lines):
             self.checkAndUpdateDict(self.tokenizedArrLabels[line][0], self.wordDictCountLabels, self.wordDictLabels, self.minOccurrenceLabels)
 
         ##add UNC token to dict and sort
-        self.wordDictLabels["$UNC$"] = self.findFreeNumber(self.wordDictLabels)
+
         self.wordDictCountLabels = OrderedDict(sorted(self.wordDictCountLabels.items(), key=lambda t: t[1], reverse=True))
         self.wordDictLabels = OrderedDict(sorted(self.wordDictLabels.items(), key=lambda t: t[1], reverse=False))
 
@@ -229,12 +242,14 @@ class LoadTransform():
             if iterations == int(maxClasses):
                 break
         newDict["$UNC$"] = wordDict["$UNC$"]
-        newDictCount["$UNC$"] = sum / 10
+        newDictCount["$UNC$"] = 1
         wordDict = OrderedDict(sorted(newDict.items(), key=lambda t: t[1], reverse=False))
         wordDictCount = OrderedDict(sorted(newDictCount.items(), key=lambda t: t[1], reverse=True))
         return wordDict, wordDictCount
 
     def calculateClassWeights(self):
+        #class_weight1 = class_weight.compute_class_weight('balanced', np.unique(self.paddedBinaryLabelArr), self.paddedBinaryLabelArr)
+
         all = 0
         self.labelClassWeightsNon = {}
         for id in self.wordDictCountLabels:
@@ -245,6 +260,7 @@ class LoadTransform():
             partial = (1 / (self.wordDictCountLabels[id]*1.0 / all)**3)
             self.labelClassWeights[i] = ((math.log1p(partial)**1.5) / 10)+1
             i += 1
+
         pass
 
     def getClassWeights(self):
@@ -273,11 +289,14 @@ class LoadTransform():
     def replaceTokensWithDictNumbers(self, tokenizedArr, wordDict):
         repTokenizedArr = copy.deepcopy(tokenizedArr)
         lines = repTokenizedArr.shape[0]
-
+        countUnc = 0
         for line in range(0, lines):
             for word in range(0, len(repTokenizedArr[line])):
                 wordText = repTokenizedArr[line][word]
                 repTokenizedArr[line][word] = self.replaceDecimalFromDict(wordText, wordDict)
+                if repTokenizedArr[line][word] == wordDict["$UNC$"]:
+                    countUnc += 1
+        self.wordDictCount["$UNC$"] = countUnc
         return repTokenizedArr
 
     def replaceDecimalFromDict(self, wordText, wordDict):
@@ -297,6 +316,7 @@ class LoadTransform():
     def createBinaryVectorFromDict(self, wordDict, arrRepLabels):
         self.binaryLabelArr = []
         lines = arrRepLabels.shape[0]
+        countUnc = 0
         for line in range(0, lines):
             labelValues = []
             for dictEntry in wordDict.values():
@@ -305,8 +325,10 @@ class LoadTransform():
                     labelValues.append(1)
                 else:
                     labelValues.append(0)
-
+            if wordDict["$UNC$"] == arrRepLabels[line][0]:
+                countUnc += 1
             self.binaryLabelArr.append(labelValues)
+        self.wordDictCountLabels["$UNC$"] = countUnc
         self.binaryLabelArr = np.array(self.binaryLabelArr)
 
     def padSequences(self):

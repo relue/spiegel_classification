@@ -10,7 +10,6 @@ import numpy as np
 import scipy.special
 from bokeh.plotting import figure, show, output_file, vplot
 from bokeh.charts import Histogram
-import copy
 from keras.preprocessing.sequence import pad_sequences
 import os.path
 import time
@@ -20,7 +19,7 @@ import re
 from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
 from sklearn.utils import class_weight
-
+import copy
 
 '''
 spark = SparkSession\
@@ -28,11 +27,10 @@ spark = SparkSession\
     .getOrCreate()
 '''
 
-
 class LoadTransform():
     df = {}
+    config = {}
     #hdfsFolder = "hdfs:///tmp/spiegelei/"
-    textType = "text"
 
     initialLoadCSV = True
     initialLoadTokens = False
@@ -47,29 +45,33 @@ class LoadTransform():
     wordDictCountLabels = {}
     labelClassWeights = {}
 
-    minOccurrenceLabels = 1
-
     tokenizedArrLabels = []
     repTokenizedArrLabels = []
     paddedBinaryLabelArr = []
     nextNumber = 0
 
     minOccurrence = 20
-    textWordLimit = 150
-    maxClasses = 5
-    topxDict = 0.9
-    batchSize = 55555
+    minOccurrenceLabels = 1
 
-    cachePath = "cache/npArr"+str(batchSize)+".h5"
+
 
     timeStart = time.time()
 
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
+
+        self.textWordLimit = self.config["textLength"]
+        self.maxClasses =  self.config["maxClasses"]
+        self.topxDict = self.config["upperDictPercentage"]
+        self.batchSize = self.config["rows"]
+        self.textType = self.config["textType"]
+        self.cachePath = "cache/npArr"+str(self.batchSize)+".h5"
+
         self.initialLoadSpiegelSet()
         self.getSkipWords()
+
         cacheParts = len(self.df.index) // self.batchSize
-        #for p in range(1,cacheParts):
-        #    cachePartPath = self.cachePath+str(p)
+
         if (self.initialLoadTokens is True or os.path.isfile(self.cachePath) is not True):
             self.tokenizeDf(self.batchSize)
             print "tokenized df"+self.getD()
@@ -79,10 +81,7 @@ class LoadTransform():
             print "Tokens replaced"+self.getD()
             self.createLabelDict()
             self.wordDictLabels, self.wordDictCountLabels = self.cutDict(self.maxClasses, self.wordDictLabels, self.wordDictCountLabels)
-
             self.repTokenizedArrLabels = self.replaceTokensWithDictNumbers(self.tokenizedArrLabels, self.wordDictLabels)
-            #self.plotCounts(self.wordDict, "abstractDict")
-            #self.plotCounts(self.wordDictLabels, "labelDict")
             self.createBinaryVectorFromDict(self.wordDictLabels, self.repTokenizedArrLabels)
             self.padSequences()
             self.writeMains()

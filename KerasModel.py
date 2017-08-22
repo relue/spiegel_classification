@@ -1,9 +1,16 @@
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Activation, Embedding, LSTM, Masking
+
 from collections import OrderedDict
 import math
 from random import shuffle
 import numpy as np
+import json
+import datetime
+import time
+start_time = time.time()
+
+
 
 class KerasModel():
     model = None
@@ -12,17 +19,18 @@ class KerasModel():
     outputT = []
     inputV = []
     outputV = []
-
+    config = {}
     inputTReal = []
     inputVReal = []
 
     transformer = None
 
-    def __init__(self, transformer):
+    def __init__(self, transformer, config):
+        self.config = config
         self.transformer = transformer
         inputVec = transformer.getInputMatrix()
         targetVec = transformer.getTargetMatrix()
-        self.getTestSets(inputVec, targetVec, self.transformer.tokenizedArr, 0.3)
+        self.getTestSets(inputVec, targetVec, self.transformer.tokenizedArr, self.config["testPercent"])
 
     def getTestSets(self, xInput, xOutput, origArr, percentage, shuffle = True):
         if shuffle:
@@ -54,17 +62,30 @@ class KerasModel():
         inputMatrix = transformer.getInputMatrix()
         shape = inputMatrix.shape
         #self.model.add(Masking(mask_value=0., input_shape=(shape[1], 1)))
-        self.model.add(Embedding(maxFeatures + 1, output_dim=128)) #, mask_zero=True
-        self.model.add(LSTM(1000, return_sequences=True))
-        self.model.add(LSTM(1000))
+        self.model.add(Embedding(maxFeatures + 1, output_dim=self.config["embeddedSize"])) #, mask_zero=True
+
+        returnSequence = True if self.config["hiddenLayers"] > 1 else False
+        self.model.add(LSTM(self.config["hiddenNodes"], return_sequences=returnSequence))
+        for hdI in range(2,self.config["hiddenLayers"]+1):
+            if hdI == self.config["hiddenLayers"]:
+                returnSequence = False
+
+            self.model.add(LSTM(self.config["hiddenNodes"], return_sequences=returnSequence))
+
         self.model.add(Dense(maxTargets, activation='softmax'))
-        self.model.compile(optimizer='adam',
+        self.model.compile(optimizer=self.config["optimizer"],
                            loss='categorical_crossentropy',
                            metrics=['categorical_accuracy'])
 
+
     def fitModel(self, transformer, saveModel = False):
         #self.model.fit(self.inputT, self.outputT, nb_epoch=1, batch_size=100, validation_split=0.3, class_weight = transformer.getClassWeights())
-        self.model.fit(self.inputT, self.outputT, nb_epoch=1, batch_size=100, validation_split=0.3, class_weight = 'auto')
+        if self.config["classBalancing"] == "own":
+            classWeightType = transformer.getClassWeights()
+        elif self.config["classBalancing"] == "self":
+            classWeightType = "auto"
+
+        self.model.fit(self.inputT, self.outputT, nb_epoch=self.config["epochs"], batch_size=self.config["batchSize"], validation_split=self.config["validationPercent"], class_weight = classWeightType)
 
     def predictModel(self, inputVec):
         return self.model.predict(inputVec, batch_size=1, verbose=2)
@@ -135,6 +156,22 @@ class KerasModel():
 
         categoryScores['all']['labelOccurence'] = len(subList)
         accuracy = float(matches)/len(subList)
+        #output = "acc:"+str(accuracy)+"\n"+"parameters:"+str(self.config) + "\n scores:"+str(categoryScores)
+
+        results = OrderedDict((
+            ("acc", accuracy),
+            ("config", self.config),
+            ("scores", categoryScores),
+            ("id", self.config["id"])
+        ))
+        results["exec_time"] = (time.time() - start_time)
+        return results
+
+    def writeToLog(self, results):
+        now = datetime.datetime.now()
+        filenamePrefix = now.strftime("%Y_%m_%d_%H_"+str(results["id"])+".rst")
+        with open("results/"+filenamePrefix,'w') as o:
+            json.dump(results, o)
         pass
 
     def getLabelByLabelVec(self, vec, wordDict):

@@ -11,8 +11,17 @@ nltk.data.path.append("/home/dev/PycharmProjects/spiegelMining/nltk_data")
 
 #nltk.download()
 import sys
+import json
+import config
 
 from KerasModel import KerasModel
+
+c = config.Config()
+
+diffDict = {}
+if len(sys.argv) > 1:
+    diffDict = json.loads(sys.argv[1])
+configDict = c.getFullConfig(diffDict = diffDict)
 
 '''
 todos:
@@ -30,13 +39,15 @@ inputTexts.append("Im neuen Podcast Netzteil wirft das Netzwelt-Ressort ab jetzt
 inputTexts.append("Die Pflegereform stellt Demenzkranke finanziell besser und stärkt die häusliche Versorgung. Wie bei jeder Reform gibt es allerdings auch Verlierer.")
 newModel = True
 
-transformer = LoadTransform()
-kerasModel = KerasModel(transformer)
+transformer = LoadTransform(configDict)
+kerasModel = KerasModel(transformer, configDict)
 
 if newModel:
     kerasModel.defineModelStructure(transformer.getDictSize(), transformer.getTargetLength(), transformer)
     kerasModel.fitModel(transformer)
     kerasModel.saveModel()
+    results = kerasModel.getMeasures(kerasModel.inputV, kerasModel.inputVReal, kerasModel.outputV)
+    kerasModel.writeToLog(results)
 else:
     #modelOut = transformer.showSampleFrame()
     kerasModel.loadModel()
@@ -51,5 +62,5 @@ else:
     testData = transformer.getInputMatrix()
     print kerasModel.predictModel(testData[0:100,])
     '''
+results = {}
 
-df = transformer.df

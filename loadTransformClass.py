@@ -65,7 +65,7 @@ class LoadTransform():
         self.topxDict = self.config["upperDictPercentage"]
         self.batchSize = self.config["rows"]
         self.textType = self.config["textType"]
-        self.cachePath = "cache/npArr"+str(self.batchSize)+".h5"
+        self.cachePath = "cache/npArr"+str(self.batchSize)+"_"+str(self.maxClasses)+".h5"
 
         self.initialLoadSpiegelSet()
         self.getSkipWords()

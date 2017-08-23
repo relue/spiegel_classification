@@ -4,7 +4,7 @@ import copy
 
 class Config():
     standardConf = collections.OrderedDict((
-        ("rows", 120000),
+        ("rows", 1000),
         ("maxClasses", 6),
         ("textLength", 200),
         ("embeddedSize", 128),
@@ -18,7 +18,7 @@ class Config():
         ("validationPercent", 0.3),
         ("testPercent", 0.1),
         ("batchSize", 100),
-        ("epochs", 100),
+        ("epochs", 1),
         ("id", 1)
     ))
 

@@ -82,7 +82,7 @@ class KerasModel():
         #self.model.fit(self.inputT, self.outputT, nb_epoch=1, batch_size=100, validation_split=0.3, class_weight = transformer.getClassWeights())
         if self.config["classBalancing"] == "own":
             classWeightType = transformer.getClassWeights()
-        elif self.config["classBalancing"] == "self":
+        elif self.config["classBalancing"] == "auto":
             classWeightType = "auto"
 
         self.model.fit(self.inputT, self.outputT, nb_epoch=self.config["epochs"], batch_size=self.config["batchSize"], validation_split=self.config["validationPercent"], class_weight = classWeightType)
@@ -156,6 +156,8 @@ class KerasModel():
 
         categoryScores['all']['labelOccurence'] = len(subList)
         accuracy = float(matches)/len(subList)
+        categoryScores['UNC'] = categoryScores['$UNC$']
+        del categoryScores['$UNC$']
         #output = "acc:"+str(accuracy)+"\n"+"parameters:"+str(self.config) + "\n scores:"+str(categoryScores)
 
         results = OrderedDict((

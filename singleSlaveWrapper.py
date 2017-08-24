@@ -25,6 +25,8 @@ diffDict = parameterJob['paramsFull']
 try:
     while loop:
         configDict = c.getFullConfig(diffDict = diffDict)
+        print "execute Diff:"+str(parameterJob['paramsDiff'])
+        print "execute Full:"+str(dict(configDict))
         transformer = LoadTransform(configDict)
         kerasModel = KerasModel(transformer, configDict)
         kerasModel.defineModelStructure(transformer.getDictSize(), transformer.getTargetLength(), transformer)
@@ -41,6 +43,7 @@ try:
 except Exception as e:
     tb = traceback.format_exc()
     ph.writeError(parameterJob, tb)
+    print tb
     raise
 
 

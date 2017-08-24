@@ -16,7 +16,7 @@ class ParallelHelper:
         one = self.parameters.find_one({'status': "new"})
         if one:
             id = one["_id"]
-            self.parameters.update({'_id':id},{"$set":{'status':'running'}},upsert=False)
+            self.parameters.update({'_id':id},{"$set":{'status':'running', 'host':socket.gethostname()}},upsert=False)
         return one
 
     def writeNewParameters(self, params, experimentName):
@@ -30,7 +30,7 @@ class ParallelHelper:
             "date": now.strftime("%Y_%m_%d_%H_M"),
             "dateFeedback": "",
             "results": "",
-            "host": socket.gethostname(),
+            "host": "",
             "errors": ""
         }
         id = self.parameters.insert_one(parameter).inserted_id

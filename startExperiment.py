@@ -10,9 +10,26 @@ from ParallelHelper import ParallelHelper
 ph = ParallelHelper()
 
 c = config.Config()
-standardConf = c.standardConf
-
 diffConfs = []
+standardConf = c.standardConf
+'''
+sensiDef = {
+    "maxClasses": range(5,30,5),
+    "hiddenNodes": range(100,1000,200),
+    "hiddenLayers": [1,2,4],
+    "classBalancing": ["auto", "own"],
+    "textType": ["abstract", "text"],
+    "rows": [100000,200000],
+    "epochs": [1,3,6]
+}
+
+for parameter in sensiDef:
+    for value in sensiDef[parameter]:
+        conf = {"id": 1}
+        conf[parameter] = value
+        diffConfs.append(conf)
+'''
+
 conf = collections.OrderedDict((
     ("maxClasses", 8),
     ("id", 1)

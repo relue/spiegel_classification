@@ -70,8 +70,6 @@ class LoadTransform():
         self.initialLoadSpiegelSet()
         self.getSkipWords()
 
-        cacheParts = len(self.df.index) // self.batchSize
-
         if (self.initialLoadTokens is True or os.path.isfile(self.cachePath) is not True):
             self.tokenizeDf(self.batchSize)
             print "tokenized df"+self.getD()

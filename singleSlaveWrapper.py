@@ -21,7 +21,7 @@ if not parameterJob:
     exit()
 
 diffDict = parameterJob['paramsFull']
-
+'''
 diffDict = {
     "rows": 1000,
     "hiddenNodes": 400,
@@ -29,7 +29,7 @@ diffDict = {
     "epochs": 2,
     "id": 1
 }
-
+'''
 try:
     while loop:
         configDict = c.getFullConfig(diffDict = diffDict)

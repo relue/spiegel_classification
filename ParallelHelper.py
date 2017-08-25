@@ -27,9 +27,10 @@ class ParallelHelper:
             "paramsDiff": params,
             "paramsFull": fullP,
             "status": "new",
-            "date": now.strftime("%Y_%m_%d_%H_M"),
+            "date": now.strftime("%Y_%m_%d_%H_%M"),
             "dateFeedback": "",
             "results": "",
+            "resultsTemp": "",
             "host": "",
             "errors": ""
         }
@@ -39,9 +40,14 @@ class ParallelHelper:
     def writeError(self, parameterJob, msg):
         id = parameterJob["_id"]
         now = datetime.datetime.now()
-        self.parameters.update({'_id':id},{"$set":{"status": "failed", "errors": msg, "dateFeedback": now.strftime("%Y_%m_%d_%H_M")}}, upsert=False)
+        self.parameters.update({'_id':id},{"$set":{"status": "failed", "errors": msg, "dateFeedback": now.strftime("%Y_%m_%d_%H_%M")}}, upsert=False)
 
     def writeResult(self, parameterJob, results):
         id = parameterJob["_id"]
         now = datetime.datetime.now()
-        self.parameters.update({'_id':id},{"$set":{'results':results, "status": "finished", "dateFeedback": now.strftime("%Y_%m_%d_%H_M")}},upsert=False)
+        self.parameters.update({'_id':id},{"$set":{'results':results, "status": "finished", "dateFeedback": now.strftime("%Y_%m_%d_%H_%M")}},upsert=False)
+
+    def writeTempResult(self, parameterJob, results):
+        id = parameterJob["_id"]
+        now = datetime.datetime.now()
+        self.parameters.update({'_id':id},{"$set":{'resultsTemp':results, "status": "updated", "dateFeedback": now.strftime("%Y_%m_%d_%H_%M")}},upsert=False)

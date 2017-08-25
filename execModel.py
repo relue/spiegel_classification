@@ -19,8 +19,13 @@ from KerasModel import KerasModel
 c = config.Config()
 
 diffDict = {}
-if len(sys.argv) > 1:
-    diffDict = json.loads(sys.argv[1])
+diffDict = {
+    "rows": 1000,
+    "hiddenNodes": 400,
+    "hiddenLayers": 1,
+    "epochs": 2,
+    "id": 1
+}
 configDict = c.getFullConfig(diffDict = diffDict)
 
 '''

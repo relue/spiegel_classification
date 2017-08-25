@@ -4,11 +4,11 @@ import copy
 
 class Config():
     standardConf = collections.OrderedDict((
-        ("rows", 150000),
-        ("maxClasses", 6),
+        ("rows", 300000),
+        ("maxClasses", 8),
         ("textLength", 150),
         ("embeddedSize", 128),
-        ("hiddenNodes", 300),
+        ("hiddenNodes", 400),
         ("hiddenLayers" , 2),
         ("learningRate", 0.001),
         ("optimizer", "adam"),
@@ -18,7 +18,7 @@ class Config():
         ("validationPercent", 0.3),
         ("testPercent", 0.1),
         ("batchSize", 100),
-        ("epochs", 2),
+        ("epochs", 10),
         ("id", 1)
     ))
 
@@ -30,7 +30,7 @@ class Config():
         ("textType", ["abstract", "full"]),
         ("embeddedSize", [64, 128]),
         ("textLength", [100, 200, 300]),
-        ("hiddenNodes", [100,200,400,600]),
+       # ("hiddenNodes", [200,400,600]),
         ("hiddenLayers" , [1, 2]),
         ("batchSize", [100,200,500])
     ))

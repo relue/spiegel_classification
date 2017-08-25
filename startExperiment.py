@@ -12,10 +12,11 @@ ph = ParallelHelper()
 c = config.Config()
 diffConfs = []
 standardConf = c.standardConf
+
 '''
 sensiDef = {
     "maxClasses": range(5,30,5),
-    "hiddenNodes": range(100,1000,200),
+    "hiddenNodes": range(100,200,500),
     "hiddenLayers": [1,2,4],
     "classBalancing": ["auto", "own"],
     "textType": ["abstract", "text"],
@@ -28,19 +29,8 @@ for parameter in sensiDef:
         conf = {"id": 1}
         conf[parameter] = value
         diffConfs.append(conf)
+
 '''
-
-conf = collections.OrderedDict((
-    ("maxClasses", 8),
-    ("id", 1)
-))
-diffConfs.append(conf)
-
-conf = collections.OrderedDict((
-    ("hiddenLayers", 1),
-    ("id", 1)
-))
-diffConfs.append(conf)
 
 conf = collections.OrderedDict((
     ("classBalancing", "auto"),
@@ -54,17 +44,7 @@ conf = collections.OrderedDict((
 ))
 diffConfs.append(conf)
 
-conf = collections.OrderedDict((
-    ("hiddenNodes", "600"),
-    ("id", 1)
-))
-diffConfs.append(conf)
 
-conf = collections.OrderedDict((
-    ("rows", "300000"),
-    ("id", 1)
-))
-diffConfs.append(conf)
 
 configList = diffConfs
 i = 1

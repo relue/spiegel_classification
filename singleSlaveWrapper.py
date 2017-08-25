@@ -22,6 +22,14 @@ if not parameterJob:
 
 diffDict = parameterJob['paramsFull']
 
+diffDict = {
+    "rows": 1000,
+    "hiddenNodes": 400,
+    "hiddenLayers": 1,
+    "epochs": 2,
+    "id": 1
+}
+
 try:
     while loop:
         configDict = c.getFullConfig(diffDict = diffDict)
@@ -30,7 +38,7 @@ try:
         transformer = LoadTransform(configDict)
         kerasModel = KerasModel(transformer, configDict)
         kerasModel.defineModelStructure(transformer.getDictSize(), transformer.getTargetLength(), transformer)
-        kerasModel.fitModel(transformer)
+        kerasModel.fitModel(transformer, parameterJob)
         results = kerasModel.getMeasures(kerasModel.inputV, kerasModel.inputVReal, kerasModel.outputV)
         ph.writeResult(parameterJob, results)
         parameterJob = ph.getNewParameters()

@@ -78,14 +78,16 @@ class KerasModel():
                            metrics=['categorical_accuracy'])
 
 
-    def fitModel(self, transformer, saveModel = False):
+    def fitModel(self, transformer, parameterJob, saveModel = False):
         #self.model.fit(self.inputT, self.outputT, nb_epoch=1, batch_size=100, validation_split=0.3, class_weight = transformer.getClassWeights())
         if self.config["classBalancing"] == "own":
             classWeightType = transformer.getClassWeights()
         elif self.config["classBalancing"] == "auto":
             classWeightType = "auto"
 
-        self.model.fit(self.inputT, self.outputT, nb_epoch=self.config["epochs"], batch_size=self.config["batchSize"], validation_split=self.config["validationPercent"], class_weight = classWeightType)
+        import callback
+        customCallback = callback.EpochResultRetrieve(self.inputV, self.outputV, parameterJob)
+        self.model.fit(self.inputT, self.outputT, nb_epoch=self.config["epochs"], batch_size=self.config["batchSize"], validation_split=self.config["validationPercent"], class_weight = classWeightType, callbacks=[customCallback])
 
     def predictModel(self, inputVec):
         return self.model.predict(inputVec, batch_size=1, verbose=2)

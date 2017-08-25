@@ -53,8 +53,6 @@ class LoadTransform():
     minOccurrence = 20
     minOccurrenceLabels = 1
 
-
-
     timeStart = time.time()
 
     def __init__(self, config):
@@ -65,7 +63,7 @@ class LoadTransform():
         self.topxDict = self.config["upperDictPercentage"]
         self.batchSize = self.config["rows"]
         self.textType = self.config["textType"]
-        self.cachePath = "cache/npArr"+str(self.batchSize)+"_"+str(self.maxClasses)+".h5"
+        self.cachePath = "cache/npArr"+str(self.batchSize)+"_"+str(self.maxClasses)+"_"+str(self.textWordLimit)+"_"+str(self.textType)+".h5"
 
         self.initialLoadSpiegelSet()
         self.getSkipWords()

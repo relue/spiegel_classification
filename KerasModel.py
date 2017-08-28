@@ -1,5 +1,5 @@
 from keras.models import Sequential, load_model
-from keras.layers import Dense, Activation, Embedding, LSTM, Masking
+from keras.layers import Dense, Activation, Embedding, LSTM, Masking, Dropout
 
 from collections import OrderedDict
 import math
@@ -63,6 +63,8 @@ class KerasModel():
         shape = inputMatrix.shape
         #self.model.add(Masking(mask_value=0., input_shape=(shape[1], 1)))
         self.model.add(Embedding(maxFeatures + 1, output_dim=self.config["embeddedSize"])) #, mask_zero=True
+        if self.config["dropoutPercentA"]:
+            self.model.add(Dropout(self.config["dropoutPercentA"], input_shape=(self.config["embeddedSize"],)))
 
         returnSequence = True if self.config["hiddenLayers"] > 1 else False
         self.model.add(LSTM(self.config["hiddenNodes"], return_sequences=returnSequence))
@@ -72,13 +74,16 @@ class KerasModel():
 
             self.model.add(LSTM(self.config["hiddenNodes"], return_sequences=returnSequence))
 
+        if self.config["dropoutPercentB"]:
+            self.model.add(Dropout(self.config["dropoutPercentB"], input_shape=(self.config["hiddenNodes"],)))
+
         self.model.add(Dense(maxTargets, activation='softmax'))
         self.model.compile(optimizer=self.config["optimizer"],
                            loss='categorical_crossentropy',
                            metrics=['categorical_accuracy'])
 
 
-    def fitModel(self, transformer, parameterJob, saveModel = False):
+    def fitModel(self, transformer, parameterJob = None, saveModel = False):
         #self.model.fit(self.inputT, self.outputT, nb_epoch=1, batch_size=100, validation_split=0.3, class_weight = transformer.getClassWeights())
         if self.config["classBalancing"] == "own":
             classWeightType = transformer.getClassWeights()

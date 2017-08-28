@@ -19,7 +19,7 @@ from KerasModel import KerasModel
 c = config.Config()
 
 diffDict = {}
-diffDict = {
+diffDictD = {
     "rows": 1000,
     "hiddenNodes": 400,
     "hiddenLayers": 1,
@@ -27,7 +27,7 @@ diffDict = {
     "id": 1
 }
 configDict = c.getFullConfig(diffDict = diffDict)
-
+#configDict = c.getFullConfig(diffDict = diffDictD)
 '''
 todos:
 1. Längen der Texte analysieren

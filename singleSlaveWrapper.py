@@ -38,7 +38,7 @@ try:
         transformer = LoadTransform(configDict)
         kerasModel = KerasModel(transformer, configDict)
         kerasModel.defineModelStructure(transformer.getDictSize(), transformer.getTargetLength(), transformer)
-        kerasModel.fitModel(transformer, parameterJob)
+        kerasModel.fitModel(transformer, parameterJob = parameterJob)
         results = kerasModel.getMeasures(kerasModel.inputV, kerasModel.inputVReal, kerasModel.outputV)
         ph.writeResult(parameterJob, results)
         parameterJob = ph.getNewParameters()

@@ -39,11 +39,56 @@ conf = collections.OrderedDict((
 diffConfs.append(conf)
 
 conf = collections.OrderedDict((
-    ("textType", "abstract"),
+    ("textLength", 200),
     ("id", 1)
 ))
 diffConfs.append(conf)
 
+conf = collections.OrderedDict((
+    ("textLength", 300),
+    ("id", 1)
+))
+diffConfs.append(conf)
+
+conf = collections.OrderedDict((
+    ("textLength", 400),
+    ("id", 1)
+))
+diffConfs.append(conf)
+
+conf = collections.OrderedDict((
+    ("embeddedSize", 64),
+    ("id", 1)
+))
+diffConfs.append(conf)
+
+conf = collections.OrderedDict((
+    ("hiddenNodes", 600),
+    ("id", 1)
+))
+diffConfs.append(conf)
+
+conf = collections.OrderedDict((
+    ("dropoutPercentA", 0.1),
+    ("id", 1)
+))
+diffConfs.append(conf)
+conf = collections.OrderedDict((
+    ("dropoutPercentA", 0.6),
+    ("id", 1)
+))
+diffConfs.append(conf)
+
+conf = collections.OrderedDict((
+    ("dropoutPercentB", 0.1),
+    ("id", 1)
+))
+diffConfs.append(conf)
+conf = collections.OrderedDict((
+    ("dropoutPercentB", 0.6),
+    ("id", 1)
+))
+diffConfs.append(conf)
 
 
 configList = diffConfs

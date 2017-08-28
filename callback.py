@@ -11,8 +11,12 @@ class EpochResultRetrieve(keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         self.EpochResults[str(epoch)] = logs
         ph = ParallelHelper()
-        ph.writeTempResult(self.parameterJob, self.EpochResults)
-        self.model.save_weights('cache/model_'+str(self.parameterJob['_id'])+'.h5')
+        if self.parameterJob:
+            ph.writeTempResult(self.parameterJob, self.EpochResults)
+            id = self.parameterJob['_id']
+        else:
+            id = 1
+        self.model.save_weights('cache/model_'+str(id)+'.h5')
 
     def returnEpochLogs(self):
         return self.EpochResults

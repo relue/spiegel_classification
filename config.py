@@ -15,11 +15,13 @@ class Config():
         ("textType", "text"),
         ("classBalancing", "own"),
         ("upperDictPercentage", 0.7),
-        ("validationPercent", 0.3),
-        ("testPercent", 0.1),
+        ("validationPercent", 0.2),
+        ("testPercent", 0.02),
         ("batchSize", 100),
         ("epochs", 10),
-        ("id", 1)
+        ("id", 1),
+        ("dropoutPercentA", 0.1),
+        ("dropoutPercentB", 0.7)
     ))
 
     parameters = collections.OrderedDict((

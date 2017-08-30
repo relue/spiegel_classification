@@ -26,8 +26,8 @@ diffDictD = {
     "epochs": 2,
     "id": 1
 }
-configDict = c.getFullConfig(diffDict = diffDict)
-#configDict = c.getFullConfig(diffDict = diffDictD)
+#configDict = c.getFullConfig(diffDict = diffDict)
+configDict = c.getFullConfig(diffDict = diffDictD)
 '''
 todos:
 1. Längen der Texte analysieren
@@ -42,7 +42,7 @@ inputTexts.append("Nach den Kämpfen in Mossul nahmen irakischen Sicherheitskrä
 inputTexts.append("Im neuen Podcast Netzteil wirft das Netzwelt-Ressort ab jetzt wöchentlich einen Blick in die Zukunft. In der ersten Folge geht es um Sprachsteuerung - und Siri und Alexa reden mit.")
 #inputTexts.append("Wegschließen oder was. Das wissen wir nicht. In diesem Polizeiruf um Sexualstraftäter gibt es keine gedämpften Talkshow-Abwägungen. Harter Stoff am Neujahrsabend.")
 inputTexts.append("Die Pflegereform stellt Demenzkranke finanziell besser und stärkt die häusliche Versorgung. Wie bei jeder Reform gibt es allerdings auch Verlierer.")
-newModel = True
+newModel = False
 
 transformer = LoadTransform(configDict)
 kerasModel = KerasModel(transformer, configDict)

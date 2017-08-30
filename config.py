@@ -8,7 +8,7 @@ class Config():
         ("maxClasses", 8),
         ("textLength", 150),
         ("embeddedSize", 128),
-        ("hiddenNodes", 400),
+        ("hiddenNodes", 600),
         ("hiddenLayers" , 2),
         ("learningRate", 0.001),
         ("optimizer", "adam"),
@@ -18,10 +18,10 @@ class Config():
         ("validationPercent", 0.2),
         ("testPercent", 0.02),
         ("batchSize", 100),
-        ("epochs", 10),
+        ("epochs", 7),
         ("id", 1),
-        ("dropoutPercentA", 0.1),
-        ("dropoutPercentB", 0.7)
+        ("dropoutPercentA", 0.0),
+        ("dropoutPercentB", 0.0)
     ))
 
     parameters = collections.OrderedDict((

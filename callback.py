@@ -1,4 +1,5 @@
 import keras
+import time
 from ParallelHelper import ParallelHelper
 class EpochResultRetrieve(keras.callbacks.Callback):
 
@@ -10,6 +11,7 @@ class EpochResultRetrieve(keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         self.EpochResults[str(epoch)] = logs
+        logs["updateTime"] = time.time()
         ph = ParallelHelper()
         if self.parameterJob:
             ph.writeTempResult(self.parameterJob, self.EpochResults)

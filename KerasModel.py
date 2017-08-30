@@ -98,6 +98,12 @@ class KerasModel():
         return self.model.predict(inputVec, batch_size=1, verbose=2)
 
     def getMeasures(self, inputVec, inputVecReal, outputVec):
+        maxLines = 1000
+        if len(inputVec) > maxLines:
+            inputVec = inputVec[0:1000, :]
+            inputVecReal = inputVecReal[0:1000, :]
+            outputVec = outputVec[0:1000, :]
+
         classifiedList = []
         lengthInput = inputVec.shape[0]
         predictions = self.model.predict(inputVec, batch_size=lengthInput)

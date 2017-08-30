@@ -33,46 +33,35 @@ for parameter in sensiDef:
 '''
 
 conf = collections.OrderedDict((
-    ("classBalancing", "auto"),
+    ("textLength", 100),
     ("id", 1)
 ))
 diffConfs.append(conf)
 
 conf = collections.OrderedDict((
-    ("textLength", 200),
+    ("textLength", 50),
     ("id", 1)
 ))
 diffConfs.append(conf)
 
 conf = collections.OrderedDict((
-    ("textLength", 300),
+    ("rows", 400000),
     ("id", 1)
 ))
 diffConfs.append(conf)
 
 conf = collections.OrderedDict((
-    ("textLength", 400),
+    ("rows", 150000),
     ("id", 1)
 ))
 diffConfs.append(conf)
 
 conf = collections.OrderedDict((
-    ("embeddedSize", 64),
+    ("rows", 300000),
     ("id", 1)
 ))
 diffConfs.append(conf)
 
-conf = collections.OrderedDict((
-    ("hiddenNodes", 600),
-    ("id", 1)
-))
-diffConfs.append(conf)
-
-conf = collections.OrderedDict((
-    ("dropoutPercentA", 0.1),
-    ("id", 1)
-))
-diffConfs.append(conf)
 conf = collections.OrderedDict((
     ("dropoutPercentA", 0.6),
     ("id", 1)
@@ -80,12 +69,14 @@ conf = collections.OrderedDict((
 diffConfs.append(conf)
 
 conf = collections.OrderedDict((
-    ("dropoutPercentB", 0.1),
+    ("dropoutPercentB", 0.6),
     ("id", 1)
 ))
 diffConfs.append(conf)
+
 conf = collections.OrderedDict((
     ("dropoutPercentB", 0.6),
+    ("dropoutPercentA", 0.6),
     ("id", 1)
 ))
 diffConfs.append(conf)

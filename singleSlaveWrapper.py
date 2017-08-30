@@ -10,10 +10,13 @@ import config
 import traceback
 from KerasModel import KerasModel
 from ParallelHelper import ParallelHelper
+from random import randint
+import time
 
 ph = ParallelHelper()
 loop = True
 c = config.Config()
+time.sleep(randint(0, 60))
 
 parameterJob = ph.getNewParameters()
 if not parameterJob:

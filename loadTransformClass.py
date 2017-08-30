@@ -63,7 +63,7 @@ class LoadTransform():
         self.topxDict = self.config["upperDictPercentage"]
         self.batchSize = self.config["rows"]
         self.textType = self.config["textType"]
-        self.cachePath = "cache/npArr"+str(self.batchSize)+"_"+str(self.maxClasses)+"_"+str(self.textWordLimit)+"_"+str(self.textType)+".h5"
+        self.cachePath = "cache/npArr"+str(self.batchSize)+"_"+str(self.maxClasses)+"_"+str(self.textWordLimit)+"_"+str(self.textType)+"_"+str(self.topxDict)+".h5"
 
         self.initialLoadSpiegelSet()
         self.getSkipWords()
@@ -150,6 +150,8 @@ class LoadTransform():
         return wrapperArr
 
     def tokenizeDf(self, batchSize=100):
+        if self.batchSize == 0:
+            batchSize = self.batchSize = len(self.df.index)-1
         df = self.df.ix[0:batchSize, :]
         textList = []
         keywordList = []

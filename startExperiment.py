@@ -33,6 +33,12 @@ for parameter in sensiDef:
 '''
 
 conf = collections.OrderedDict((
+    ("dropoutPercentB", 0.6),
+    ("id", 1)
+))
+diffConfs.append(conf)
+
+conf = collections.OrderedDict((
     ("textLength", 100),
     ("id", 1)
 ))

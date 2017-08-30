@@ -100,9 +100,9 @@ class KerasModel():
     def getMeasures(self, inputVec, inputVecReal, outputVec):
         maxLines = 1000
         if len(inputVec) > maxLines:
-            inputVec = inputVec[0:1000, :]
-            inputVecReal = inputVecReal[0:1000, :]
-            outputVec = outputVec[0:1000, :]
+            inputVec = inputVec[0:999, :]
+            inputVecReal = inputVecReal[0:999]
+            outputVec = outputVec[0:999, :]
 
         classifiedList = []
         lengthInput = inputVec.shape[0]

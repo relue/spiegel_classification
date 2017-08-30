@@ -4,9 +4,9 @@ import copy
 
 class Config():
     standardConf = collections.OrderedDict((
-        ("rows", 300000),
+        ("rows", 0),
         ("maxClasses", 8),
-        ("textLength", 150),
+        ("textLength", 200),
         ("embeddedSize", 128),
         ("hiddenNodes", 600),
         ("hiddenLayers" , 2),
@@ -14,8 +14,8 @@ class Config():
         ("optimizer", "adam"),
         ("textType", "text"),
         ("classBalancing", "own"),
-        ("upperDictPercentage", 0.7),
-        ("validationPercent", 0.2),
+        ("upperDictPercentage", 0.95),
+        ("validationPercent", 0.1),
         ("testPercent", 0.02),
         ("batchSize", 100),
         ("epochs", 7),

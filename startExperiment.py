@@ -33,37 +33,13 @@ for parameter in sensiDef:
 '''
 
 conf = collections.OrderedDict((
-    ("dropoutPercentB", 0.6),
+    ("textLength", 250),
     ("id", 1)
 ))
 diffConfs.append(conf)
 
 conf = collections.OrderedDict((
-    ("textLength", 100),
-    ("id", 1)
-))
-diffConfs.append(conf)
-
-conf = collections.OrderedDict((
-    ("textLength", 50),
-    ("id", 1)
-))
-diffConfs.append(conf)
-
-conf = collections.OrderedDict((
-    ("rows", 400000),
-    ("id", 1)
-))
-diffConfs.append(conf)
-
-conf = collections.OrderedDict((
-    ("rows", 150000),
-    ("id", 1)
-))
-diffConfs.append(conf)
-
-conf = collections.OrderedDict((
-    ("rows", 300000),
+    ("rows", 450000),
     ("id", 1)
 ))
 diffConfs.append(conf)

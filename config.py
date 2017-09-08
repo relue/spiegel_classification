@@ -4,7 +4,7 @@ import copy
 
 class Config():
     standardConf = collections.OrderedDict((
-        ("rows", 0),
+        ("rows", 529000),
         ("maxClasses", 8),
         ("textLength", 200),
         ("embeddedSize", 128),
